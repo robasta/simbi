@@ -30,7 +30,7 @@ import { useScroll } from '@/hooks/useScrollListener';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import { AiChatMessageResponse, AiChatPlanResponse } from '@/models/ai-models';
-import { savePlan } from '@/store/program';
+import { saveProgram } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
@@ -241,7 +241,7 @@ function PlanMessage({
   const saveAiPlan = (m: AiChatPlanResponse) => {
     const programId = uuid();
     dispatch(
-      savePlan({
+      saveProgram({
         programId,
         programBlueprint: new ProgramBlueprint(
           m.plan.name,

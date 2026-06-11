@@ -10,7 +10,7 @@ import {
   SharedProgramBlueprint,
   SharedSession,
 } from '@/models/feed-models';
-import { addProgramSession, savePlan } from '@/store/program';
+import { addProgramSession, saveProgram } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 import { T } from '@tolgee/react';
 import { Animated, View } from 'react-native';
@@ -51,7 +51,7 @@ function SharedProgramBlueprintContent({
   const handleSave = () => {
     const programId = uuid();
     dispatch(
-      savePlan({
+      saveProgram({
         programId,
         programBlueprint: program,
       }),
@@ -132,7 +132,7 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
   const dispatch = useDispatch();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const headerColor = useScrollHeaderColor();
-  const activeProgramId = useAppSelector((x) => x.program.activePlanId);
+  const activeProgramId = useAppSelector((x) => x.program.activeProgramId);
   const { push } = useRouter();
   const [sessionToReplace, setSessionToReplace] = useState<Session | undefined>(
     undefined,

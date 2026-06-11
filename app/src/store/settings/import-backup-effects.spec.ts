@@ -19,7 +19,7 @@ import {
   checkIfWeightMigrationRequired,
   upsertStoredSessions,
 } from '@/store/stored-sessions';
-import { upsertSavedPlans } from '@/store/program';
+import { upsertSavedPrograms } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 
 describe('import-backup-effects', () => {
@@ -107,7 +107,7 @@ describe('import-backup-effects', () => {
     expect(testBed.getDispatchedAction(upsertStoredSessions).payload).toBe(
       mockWorkouts,
     );
-    expect(testBed.getDispatchedAction(upsertSavedPlans).payload).toBe(
+    expect(testBed.getDispatchedAction(upsertSavedPrograms).payload).toBe(
       mockPrograms,
     );
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(

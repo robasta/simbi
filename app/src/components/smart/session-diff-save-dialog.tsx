@@ -13,7 +13,7 @@ import { EmptySession } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { setCurrentPlanDiff } from '@/store/current-session';
 import {
-  applyDiffToPlan,
+  applyDiffToProgram,
   fetchUpcomingSessions,
   selectNewWorkoutName,
 } from '@/store/program';
@@ -115,7 +115,7 @@ export function SessionDiffSaveDialog() {
       onAction={() => {
         if (selectedDiff) {
           dispatch(
-            applyDiffToPlan(
+            applyDiffToProgram(
               saveAsNewWorkout
                 ? { type: 'add', diff: selectedDiff }
                 : { ...currentPlanDiff, diff: selectedDiff },

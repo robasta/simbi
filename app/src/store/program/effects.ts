@@ -5,15 +5,15 @@ import { AddEffectFn, RootState } from '@/store/store';
 import { showSnackbar } from '@/store/app';
 import {
   fetchUpcomingSessions,
-  importPlanFromFile,
-  importPlanFromJson,
+  importProgramFromFile,
+  importProgramFromJson,
   initializeProgramStateSlice,
-  savePlan,
-  savePlanAndSetActive,
+  saveProgram,
+  saveProgramAndSetActive,
   selectActiveProgram,
-  setActivePlan,
+  setActiveProgram,
   setIsHydrated,
-  setSavedPlans,
+  setSavedPrograms,
   setUpcomingSessions,
 } from '@/store/program';
 import { uuid } from '@/utils/uuid';
@@ -48,7 +48,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       const start = performance.now();
       cancelActiveListeners();
 
-      let activePlanId: string | undefined;
+      let activeProgramId: string | undefined;
       const dbPrograms = await db.select().from(programsSchema);
       const programs = (
         dbPrograms.length ? dbPrograms : [getEmptyInitialProgram()]
@@ -57,30 +57,30 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
           (x) => x.id,
           (row) => {
             if (row.active) {
-              activePlanId = row.id;
+              activeProgramId = row.id;
             }
             return ProgramBlueprint.fromJSON(row.payload);
           },
         ),
         {},
       );
-      dispatch(setSavedPlans(programs));
+      dispatch(setSavedPrograms(programs));
 
       if (!(await keyValueStore.getItem(builtInProgramsStorageKey))) {
         for (const [id, program] of Object.entries(BuiltInPrograms)) {
           if (id in getState().program.savedPrograms) {
             continue;
           }
-          dispatch(savePlan({ programId: id, programBlueprint: program }));
+          dispatch(saveProgram({ programId: id, programBlueprint: program }));
         }
         await persistPrograms(getState(), db, logger, throwIfCancelled);
         await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
       }
-      if (!activePlanId || !getState().program.savedPrograms[activePlanId]) {
-        activePlanId = Object.keys(getState().program.savedPrograms)[0]!;
+      if (!activeProgramId || !getState().program.savedPrograms[activeProgramId]) {
+        activeProgramId = Object.keys(getState().program.savedPrograms)[0]!;
       }
 
-      dispatch(setActivePlan({ activePlanId }));
+      dispatch(setActiveProgram({ activeProgramId }));
 
       dispatch(setIsHydrated(true));
       const end = performance.now();
@@ -107,8 +107,8 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       const start = performance.now();
       const shouldPersist =
         stateAfterReduce.program.isHydrated &&
-        (stateAfterReduce.program.activePlanId !==
-          stateBeforeReduce.program.activePlanId ||
+        (stateAfterReduce.program.activeProgramId !==
+          stateBeforeReduce.program.activeProgramId ||
           stateAfterReduce.program.savedPrograms !==
             stateBeforeReduce.program.savedPrograms);
       if (shouldPersist) {
@@ -164,7 +164,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
   );
 
   addEffect(
-    importPlanFromFile,
+    importProgramFromFile,
     async (_, { dispatch, extra: { filePickerService, tolgee, logger } }) => {
       const file = await filePickerService.pickFile();
       if (!file) {
@@ -173,7 +173,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
 
       try {
         const text = new TextDecoder().decode(file.bytes);
-        dispatch(importPlanFromJson({ json: JSON.parse(text) }));
+        dispatch(importProgramFromJson({ json: JSON.parse(text) }));
       } catch (error) {
         logger.warn('Failed to parse imported workout plan file', { error });
         dispatch(
@@ -184,23 +184,23 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
   );
 
   addEffect(
-    importPlanFromJson,
+    importProgramFromJson,
     async (
       { payload: { json } },
       { dispatch, getState, extra: { tolgee, logger } },
     ) => {
       try {
-        const importedPlan = parseImportedPlanJson(json);
-        const trimmedName = importedPlan.name.trim();
+        const importedProgram = parseImportedProgramJson(json);
+        const trimmedName = importedProgram.name.trim();
         if (!trimmedName) {
-          throw new InvalidPlanImportError('Plan name is empty after trimming');
+          throw new InvalidProgramImportError('Plan name is empty after trimming');
         }
 
-        const existingPlanNames = Object.values(getState().program.savedPrograms)
+        const existingProgramNames = Object.values(getState().program.savedPrograms)
           .map((program) => program.name)
           .filter((name) => !!name.trim());
-        const uniqueName = getUniqueImportedPlanName(
-          existingPlanNames,
+        const uniqueName = getUniqueImportedProgramName(
+          existingProgramNames,
           trimmedName,
         );
 
@@ -209,14 +209,14 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
           programId = uuid();
         }
         dispatch(
-          savePlanAndSetActive({
+          saveProgramAndSetActive({
             programId,
-            programBlueprint: importedPlan.with({ name: uniqueName }),
+            programBlueprint: importedProgram.with({ name: uniqueName }),
           }),
         );
         dispatch(showSnackbar({ text: tolgee.t('plan.import.success.message') }));
       } catch (error) {
-        if (error instanceof UnsupportedPlanImportFormatError) {
+        if (error instanceof UnsupportedProgramImportFormatError) {
           dispatch(
             showSnackbar({
               text: tolgee.t('plan.import.unsupported_format.message'),
@@ -224,7 +224,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
           );
           return;
         }
-        if (error instanceof InvalidPlanImportError) {
+        if (error instanceof InvalidProgramImportError) {
           dispatch(
             showSnackbar({ text: tolgee.t('plan.import.invalid_file.message') }),
           );
@@ -239,12 +239,12 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
 // Helper function to yield control back to the event loop
 const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));
 
-class UnsupportedPlanImportFormatError extends Error {}
-class InvalidPlanImportError extends Error {}
+class UnsupportedProgramImportFormatError extends Error {}
+class InvalidProgramImportError extends Error {}
 
-function parseImportedPlanJson(json: unknown): ProgramBlueprint {
+function parseImportedProgramJson(json: unknown): ProgramBlueprint {
   if (!json || typeof json !== 'object') {
-    throw new InvalidPlanImportError('JSON root is not an object');
+    throw new InvalidProgramImportError('JSON root is not an object');
   }
 
   const parsed = json as Record<string, unknown>;
@@ -254,7 +254,7 @@ function parseImportedPlanJson(json: unknown): ProgramBlueprint {
       parsed.formatVersion !== 1 ||
       !parsed.program
     ) {
-      throw new UnsupportedPlanImportFormatError(
+      throw new UnsupportedProgramImportFormatError(
         'Unsupported LiftLogPlanExport wrapper format',
       );
     }
@@ -270,11 +270,11 @@ function tryParseProgramBlueprintJson(
   try {
     return ProgramBlueprint.fromJSON(json);
   } catch {
-    throw new InvalidPlanImportError('Invalid ProgramBlueprintJSON payload');
+    throw new InvalidProgramImportError('Invalid ProgramBlueprintJSON payload');
   }
 }
 
-function getUniqueImportedPlanName(
+function getUniqueImportedProgramName(
   existingNames: readonly string[],
   importedName: string,
 ): string {
@@ -314,7 +314,7 @@ async function persistPrograms(
           ([key, program]) => ({
             id: key,
             modelVersion: LatestVersion,
-            active: key === stateAfterReduce.program.activePlanId,
+            active: key === stateAfterReduce.program.activeProgramId,
             payload: ProgramBlueprint.fromPOJO(program).toJSON(),
           }),
         ),
@@ -336,7 +336,7 @@ function getEmptyInitialProgram(): typeof programsSchema.$inferSelect {
     active: true,
     payload: {
       lastEdited: toLocalDateJSON(LocalDate.now()),
-      name: 'My Plan',
+      name: 'My Program',
       sessions: [],
     },
   };

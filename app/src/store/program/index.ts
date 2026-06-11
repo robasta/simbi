@@ -17,7 +17,7 @@ import Enumerable from 'linq';
 
 interface ProgramState {
   readonly isHydrated: boolean;
-  readonly activePlanId: string;
+  readonly activeProgramId: string;
   readonly upcomingSessions: RemoteData<readonly Session[]>;
   readonly savedPrograms: {
     readonly [programId: string]: ProgramBlueprintPOJO;
@@ -26,7 +26,7 @@ interface ProgramState {
 
 const initialState: ProgramState = {
   isHydrated: false,
-  activePlanId: '00000000-0000-0000-0000-000000000000',
+  activeProgramId: '00000000-0000-0000-0000-000000000000',
   upcomingSessions: RemoteData.notAsked(),
   savedPrograms: {},
 };
@@ -61,19 +61,19 @@ const programSlice = createSlice({
       }
     },
 
-    applyDiffToPlan(state, action: PayloadAction<PlanDiff>) {
+    applyDiffToProgram(state, action: PayloadAction<PlanDiff>) {
       if (action.payload.type === 'add') {
-        state.savedPrograms[state.activePlanId]!.sessions.push(
+        state.savedPrograms[state.activeProgramId]!.sessions.push(
           applySessionBlueprintDiff(
             EmptySession.blueprint,
             action.payload.diff,
           ),
         );
       } else if (action.payload.type === 'diff') {
-        state.savedPrograms[state.activePlanId]!.sessions[
+        state.savedPrograms[state.activeProgramId]!.sessions[
           action.payload.sessionIndex
         ] = applySessionBlueprintDiff(
-          state.savedPrograms[state.activePlanId]!.sessions[
+          state.savedPrograms[state.activeProgramId]!.sessions[
             action.payload.sessionIndex
           ] as SessionBlueprint,
           action.payload.diff,
@@ -113,13 +113,13 @@ const programSlice = createSlice({
       }
     },
 
-    deleteSavedPlan(state, action: PayloadAction<{ programId: string }>) {
+    deleteSavedProgram(state, action: PayloadAction<{ programId: string }>) {
       const { [action.payload.programId]: _, ...remainingPrograms } =
         state.savedPrograms;
       state.savedPrograms = remainingPrograms;
     },
 
-    setSavedPlanName(
+    setSavedProgramName(
       state,
       action: PayloadAction<{ programId: string; name: string }>,
     ) {
@@ -132,7 +132,7 @@ const programSlice = createSlice({
       }
     },
 
-    setSavedPlans(
+    setSavedPrograms(
       state,
       action: PayloadAction<{ [programId: string]: ProgramBlueprint }>,
     ) {
@@ -141,7 +141,7 @@ const programSlice = createSlice({
       );
     },
 
-    upsertSavedPlans(
+    upsertSavedPrograms(
       state,
       action: PayloadAction<{ [programId: string]: ProgramBlueprint }>,
     ) {
@@ -196,8 +196,8 @@ const programSlice = createSlice({
       }
     },
 
-    setActivePlan(state, action: PayloadAction<{ activePlanId: string }>) {
-      state.activePlanId = action.payload.activePlanId;
+    setActiveProgram(state, action: PayloadAction<{ activeProgramId: string }>) {
+      state.activeProgramId = action.payload.activeProgramId;
     },
 
     removeSessionFromProgram(
@@ -218,7 +218,7 @@ const programSlice = createSlice({
       }
     },
 
-    createSavedPlan(
+    createSavedProgram(
       state,
       action: PayloadAction<{
         programId: string;
@@ -234,7 +234,7 @@ const programSlice = createSlice({
       };
     },
 
-    savePlan(
+    saveProgram(
       state,
       action: PayloadAction<{
         programId: string;
@@ -245,7 +245,7 @@ const programSlice = createSlice({
         action.payload.programBlueprint.toPOJO();
     },
 
-    savePlanAndSetActive(
+    saveProgramAndSetActive(
       state,
       action: PayloadAction<{
         programId: string;
@@ -254,12 +254,12 @@ const programSlice = createSlice({
     ) {
       state.savedPrograms[action.payload.programId] =
         action.payload.programBlueprint.toPOJO();
-      state.activePlanId = action.payload.programId;
+      state.activeProgramId = action.payload.programId;
     },
   },
   selectors: {
     selectActiveProgram: createSelector(
-      (state: ProgramState) => state.savedPrograms[state.activePlanId]!,
+      (state: ProgramState) => state.savedPrograms[state.activeProgramId]!,
       ProgramBlueprint.fromPOJO,
     ),
 
@@ -284,7 +284,7 @@ const programSlice = createSlice({
      */
     selectNewWorkoutName: createSelector(
       (state: ProgramState) =>
-        state.savedPrograms[state.activePlanId]?.sessions || [],
+        state.savedPrograms[state.activeProgramId]?.sessions || [],
       (sessions) => {
         const existingNames = sessions.map((session) => session.name);
         let counter = sessions.length + 1;
@@ -304,20 +304,20 @@ const programSlice = createSlice({
 export const {
   setIsHydrated,
   setUpcomingSessions,
-  applyDiffToPlan,
+  applyDiffToProgram,
   addProgramSession,
-  deleteSavedPlan,
+  deleteSavedProgram,
   moveSessionBlueprintDownInProgram,
   moveSessionBlueprintUpInProgram,
   removeSessionFromProgram,
-  savePlan,
-  savePlanAndSetActive,
-  setActivePlan,
+  saveProgram,
+  saveProgramAndSetActive,
+  setActiveProgram,
   setProgramSession,
   setProgramSessions,
-  setSavedPlanName,
-  upsertSavedPlans,
-  setSavedPlans,
+  setSavedProgramName,
+  upsertSavedPrograms,
+  setSavedPrograms,
 } = programSlice.actions;
 
 export const {
@@ -331,9 +331,9 @@ export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 export const initializeProgramStateSlice = createAction(
   'initializeProgramStateSlice',
 );
-export const importPlanFromFile = createAction('importPlanFromFile');
-export const importPlanFromJson = createAction<{ json: unknown }>(
-  'importPlanFromJson',
+export const importProgramFromFile = createAction('importProgramFromFile');
+export const importProgramFromJson = createAction<{ json: unknown }>(
+  'importProgramFromJson',
 );
 
 export default programSlice.reducer;

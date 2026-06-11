@@ -11,7 +11,7 @@ import { useAppSelectorWithArg } from '@/store';
 import {
   addProgramSession,
   selectProgram,
-  setSavedPlanName,
+  setSavedProgramName,
 } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
@@ -73,7 +73,7 @@ export default function ManageWorkouts() {
         style={{ marginBottom: spacing[2] }}
         mode="flat"
         onChangeText={(name) =>
-          dispatch(setSavedPlanName({ programId: programId, name }))
+          dispatch(setSavedProgramName({ programId: programId, name }))
         }
       />
       {emptyInfo}
