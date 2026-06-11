@@ -3,7 +3,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ProgramListItem from '@/components/smart/program-list-item';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
-import { importPlanFromFile, savePlan, selectAllPrograms } from '@/store/program';
+import { importProgramFromFile, saveProgram, selectAllPrograms } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -24,7 +24,7 @@ export default function ProgramList() {
   const addProgram = () => {
     const programId = uuid();
     dispatch(
-      savePlan({
+      saveProgram({
         programId,
         programBlueprint: new ProgramBlueprint(
           t('plan.new_default_name.label'),
@@ -37,7 +37,7 @@ export default function ProgramList() {
   };
 
   const importProgram = () => {
-    dispatch(importPlanFromFile());
+    dispatch(importProgramFromFile());
   };
 
   const floatingBottomContainer = (

@@ -41,7 +41,7 @@ function PlanManager() {
   const { push } = useRouter();
 
   const activeProgramId = useAppSelector(
-    (s: RootState) => s.program.activePlanId,
+    (s: RootState) => s.program.activeProgramId,
   );
 
   return (
@@ -83,7 +83,7 @@ function ListUpcomingWorkouts({
     selectCurrentSession,
     'workoutSession',
   );
-  const planId = useAppSelector((x) => x.program.activePlanId);
+  const planId = useAppSelector((x) => x.program.activeProgramId);
   const { push } = useRouter();
   const dispatch = useDispatch();
   const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] =

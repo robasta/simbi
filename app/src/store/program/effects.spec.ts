@@ -4,9 +4,9 @@ import { ProgramBlueprint } from '@/models/blueprint-models';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { applyProgramEffects } from '@/store/program/effects';
 import {
-  importPlanFromFile,
-  importPlanFromJson,
-  savePlanAndSetActive,
+  importProgramFromFile,
+  importProgramFromJson,
+  saveProgramAndSetActive,
 } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 
@@ -16,7 +16,7 @@ function makeProgramJson(name: string) {
 
 const baseProgramState = {
   program: {
-    activePlanId: 'base-plan',
+    activeProgramId: 'base-plan',
     isHydrated: true,
     upcomingSessions: undefined,
     savedPrograms: {
@@ -34,7 +34,7 @@ describe('program import effects', () => {
     applyProgramEffects(testBed.addEffect);
 
     await testBed.dispatchHandled(
-      importPlanFromJson({
+      importProgramFromJson({
         json: {
           type: 'LiftLogPlanExport',
           formatVersion: 1,
@@ -44,7 +44,7 @@ describe('program import effects', () => {
     );
 
     expect(
-      testBed.getDispatchedAction(savePlanAndSetActive).payload
+      testBed.getDispatchedAction(saveProgramAndSetActive).payload
       .programBlueprint.name,
     ).toBe('Imported Plan');
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
@@ -60,11 +60,11 @@ describe('program import effects', () => {
     applyProgramEffects(testBed.addEffect);
 
     await testBed.dispatchHandled(
-      importPlanFromJson({ json: makeProgramJson('Raw Imported Plan') }),
+      importProgramFromJson({ json: makeProgramJson('Raw Imported Plan') }),
     );
 
     expect(
-      testBed.getDispatchedAction(savePlanAndSetActive).payload
+      testBed.getDispatchedAction(saveProgramAndSetActive).payload
         .programBlueprint.name,
     ).toBe('Raw Imported Plan');
   });
@@ -77,7 +77,7 @@ describe('program import effects', () => {
     applyProgramEffects(testBed.addEffect);
 
     await testBed.dispatchHandled(
-      importPlanFromJson({
+      importProgramFromJson({
         json: {
           type: 'LiftLogPlanExport',
           formatVersion: 2,
@@ -86,7 +86,7 @@ describe('program import effects', () => {
       }),
     );
 
-    testBed.expectNotDispatched(savePlanAndSetActive);
+    testBed.expectNotDispatched(saveProgramAndSetActive);
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
       'plan.import.unsupported_format.message',
     );
@@ -99,9 +99,9 @@ describe('program import effects', () => {
     });
     applyProgramEffects(testBed.addEffect);
 
-    await testBed.dispatchHandled(importPlanFromJson({ json: null }));
+    await testBed.dispatchHandled(importProgramFromJson({ json: null }));
 
-    testBed.expectNotDispatched(savePlanAndSetActive);
+    testBed.expectNotDispatched(saveProgramAndSetActive);
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
       'plan.import.invalid_file.message',
     );
@@ -111,7 +111,7 @@ describe('program import effects', () => {
     const testBed = createAddEffectTestBed({
       initialState: {
         program: {
-          activePlanId: 'plan-1',
+          activeProgramId: 'plan-1',
           isHydrated: true,
           upcomingSessions: undefined,
           savedPrograms: {
@@ -133,11 +133,11 @@ describe('program import effects', () => {
     applyProgramEffects(testBed.addEffect);
 
     await testBed.dispatchHandled(
-      importPlanFromJson({ json: makeProgramJson('Imported Plan') }),
+      importProgramFromJson({ json: makeProgramJson('Imported Plan') }),
     );
 
     expect(
-      testBed.getDispatchedAction(savePlanAndSetActive).payload
+      testBed.getDispatchedAction(saveProgramAndSetActive).payload
         .programBlueprint.name,
     ).toBe('Imported Plan (Imported 2)');
   });
@@ -154,10 +154,10 @@ describe('program import effects', () => {
     });
     applyProgramEffects(testBed.addEffect);
 
-    await testBed.dispatchHandled(importPlanFromFile());
+    await testBed.dispatchHandled(importProgramFromFile());
 
-    testBed.expectNotDispatched(importPlanFromJson);
-    testBed.expectNotDispatched(savePlanAndSetActive);
+    testBed.expectNotDispatched(importProgramFromJson);
+    testBed.expectNotDispatched(saveProgramAndSetActive);
   });
 
   it('shows invalid file message for malformed JSON bytes', async () => {
@@ -174,9 +174,9 @@ describe('program import effects', () => {
     });
     applyProgramEffects(testBed.addEffect);
 
-    await testBed.dispatchHandled(importPlanFromFile());
+    await testBed.dispatchHandled(importProgramFromFile());
 
-    testBed.expectNotDispatched(importPlanFromJson);
+    testBed.expectNotDispatched(importProgramFromJson);
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
       'plan.import.invalid_file.message',
     );

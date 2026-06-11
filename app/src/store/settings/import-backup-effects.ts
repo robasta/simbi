@@ -2,7 +2,7 @@ import { LiftLog } from '@/gen/proto';
 import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
 import { AddEffectFn } from '@/store/store';
-import { upsertSavedPlans } from '@/store/program';
+import { upsertSavedPrograms } from '@/store/program';
 import {
   beginFeedImport,
   importBackupData,
@@ -81,7 +81,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     importBackupData,
     async ({ payload: dao }, { dispatch, extra: { tolgee } }) => {
       dispatch(upsertStoredSessions(dao.workouts));
-      dispatch(upsertSavedPlans(dao.programs));
+      dispatch(upsertSavedPrograms(dao.programs));
       dispatch(
         showSnackbar({
           text: tolgee.t('Restore complete!'),
