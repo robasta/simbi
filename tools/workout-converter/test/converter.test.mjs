@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { convertWorkoutPlanJson, convertWorkoutPlanObject } from "../src/converter.js";
 
 const fixtureStrength = readFileSync(
-  join(process.cwd(), "..", "..", "docs", "strength.json"),
+  join(process.cwd(),"test", "strength.json"),
   "utf8"
 );
 

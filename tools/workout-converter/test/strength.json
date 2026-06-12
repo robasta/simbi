@@ -1,0 +1,48 @@
+{
+  "program_name": "Home 4-Day Strength & Muscle (Weekdays)",
+  "days": [
+    {
+      "name": "Day 1 - Upper Strength",
+      "exercises": [
+        {"name": "Barbell Bench Press", "sets": 4, "reps": "6-8"},
+        {"name": "Bent Over Barbell Row", "sets": 4, "reps": "6-8"},
+        {"name": "Dumbbell Shoulder Press", "sets": 3, "reps": "8-10"},
+        {"name": "EZ Bar Curl", "sets": 3, "reps": "10"},
+        {"name": "EZ Bar Skull Crushers", "sets": 3, "reps": "10"},
+        {"name": "Ab Roller", "sets": 3, "reps": "8-12"}
+      ]
+    },
+    {
+      "name": "Day 2 - Lower Strength",
+      "exercises": [
+        {"name": "Barbell Squat", "sets": 4, "reps": "6-8"},
+        {"name": "Barbell Deadlift", "sets": 4, "reps": "5-8"},
+        {"name": "Dumbbell Lunges", "sets": 3, "reps": "10/leg"},
+        {"name": "Standing Calf Raise (Dumbbells)", "sets": 3, "reps": "15-20"},
+        {"name": "Plank", "sets": 3, "reps": "30-60 sec"}
+      ]
+    },
+    {
+      "name": "Day 3 - Upper Hypertrophy",
+      "exercises": [
+        {"name": "Incline Dumbbell Press", "sets": 4, "reps": "8-12"},
+        {"name": "One-arm Dumbbell Row", "sets": 3, "reps": "10-12"},
+        {"name": "Dumbbell Lateral Raise", "sets": 3, "reps": "12-15"},
+        {"name": "EZ Bar Curl", "sets": 3, "reps": "10-12"},
+        {"name": "Bench Dips", "sets": 3, "reps": "10-12"},
+        {"name": "Ab Roller", "sets": 3, "reps": "8-12"}
+      ]
+    },
+    {
+      "name": "Day 4 - Lower + Conditioning",
+      "exercises": [
+        {"name": "Goblet Squat", "sets": 3, "reps": "10-12"},
+        {"name": "Dumbbell Deadlift", "sets": 3, "reps": "10-12"},
+        {"name": "Step-ups", "sets": 3, "reps": "12/leg"},
+        {"name": "Standing Calf Raise", "sets": 3, "reps": "15-20"},
+        {"name": "Jump Rope", "sets": 5, "reps": "60 sec"},
+        {"name": "Exercise Bike", "sets": 1, "reps": "15-20 min"}
+      ]
+    }
+  ]
+}
